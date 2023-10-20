@@ -22,6 +22,9 @@ def create_app(test_config=None):
     app.register_blueprint(modulo.bp)
     app.add_url_rule('/', endpoint='index')
 
+    from . import modulowikiloc
+    app.register_blueprint(modulowikiloc.bp)
+
     return app
 
 
