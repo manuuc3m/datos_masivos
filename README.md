@@ -14,11 +14,11 @@ pip install -e . ( o si tiene la version 3: pip3 install -e .)
 
 ## 3. comando para ejecutar el servidor 
 export FLASK_APP=flaskr
-export FLASK_APP=flaskr
 flask run 
 
 ## 4. WINDOWS
-$env:FLASK_APP = "flaskr"
+# ./flaskr is flask directory, is a relativa path
+$env:FLASK_APP = "./flaskr"
 $env:FLASK_ENV = "development"
 flask run 
 
