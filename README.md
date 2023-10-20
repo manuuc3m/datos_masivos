@@ -18,7 +18,7 @@ flask run
 
 ## 4. WINDOWS
 # ./flaskr is flask directory, is a relativa path
-$env:FLASK_APP = "./flaskr"
+$env:FLASK_APP = "flaskr"
 $env:FLASK_ENV = "development"
 flask run 
 
