@@ -1,0 +1,30 @@
+{"aparcamientos": [
+
+    {
+      "id": 1055046765,
+      "latitud": 40.3480977,
+      "longitud": -3.8290251,
+      "etiquetas": {
+        "localidad": "MADRID",
+        "descripcion": "Apacarmiento madrid"
+      }
+    },
+    {
+        "id": 1055046765,
+        "latitud": 40.3480977,
+        "longitud": -3.8290251,
+        "etiquetas": {
+          "localidad": "LEGANES",
+          "descripcion": "aparcamiento leganes"
+        }
+      },{
+        "id": 1055046765,
+        "latitud": 40.3480977,
+        "longitud": -3.8290251,
+        "etiquetas": {
+          "localidad": "GETAFE",
+          "descripcion": "aparcamiento getafe"
+        }
+      }
+]
+}
