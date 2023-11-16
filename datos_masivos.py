@@ -2,7 +2,8 @@ import requests
 import xml.etree.ElementTree as ET
 import sqlite3 
 from bs4 import BeautifulSoup
-
+import webbrowser
+import os
 
 wikipedia_url="https://es.wikipedia.org/wiki/"
 aparcamientos_url = "https://datos.madrid.es/egob/catalogo/202625-0-aparcamientos-publicos.xml"
@@ -141,8 +142,15 @@ def scraping(inicio,soup):
 
         print('\n'.join(contenido))
 
-
-
+# Función para mostrar los distritos y capturar la elección del usuario
+'''
+def seleccionar_distrito():
+    print("En qué distrito quieres ver la ruta:")
+    for i, distrito in enumerate(lista_distritos, start=1):
+        print(f"{i}. {distrito}")
+    eleccion = int(input("Selecciona un número: ")) - 1
+    return lista_distritos[eleccion]
+'''
 
 #METODO PRINCIPAL MAIN
 if __name__ == '__main__':
@@ -159,6 +167,11 @@ if __name__ == '__main__':
     record = cursor.fetchall()
     print("Registros", record)
     cursor.close()
+    
+    '''
+    distrito_seleccionado = seleccionar_distrito()
+    print(f"Has seleccionado: {distrito_seleccionado}")    
+    '''
 
 
     
