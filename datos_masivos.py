@@ -1,12 +1,13 @@
 import requests 
 import xml.etree.ElementTree as ET
 import sqlite3 
+from bs4 import BeautifulSoup
+
 
 wikipedia_url="https://es.wikipedia.org/wiki/"
-wikipedia_distritos_url="https://es.wikipedia.org/wiki/Anexo:Distritos_de_Madrid"
 aparcamientos_url = "https://datos.madrid.es/egob/catalogo/202625-0-aparcamientos-publicos.xml"
 
-lista_rutas=["Argüelles","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",]
+lista_rutas=["Centro","Arganzuela","Retiro","Salamanca","Chamartin","Tetuan","Chamberi","Fuencarral-El Pardo","Moncloa-Aravaca","Latina","Carabanchel","Usera","Puente de Vallecas","Moratalaz","Ciudad Lineal","Hortaleza","Villaverde","Villa de Vallecas","Vicalvaro","San Blas-Canillejas","Barajas"]
 
 drop_tabla_aparcamientos = """DROP TABLE IF EXISTS aparcamientos;"""
 tabla_aparcamientos = """CREATE TABLE aparcamientos (
@@ -93,14 +94,19 @@ def cargar_datos_aparcamientos(datos):
 
 #METODOS PARA OBTENER INFORMACION HISTORICA
 
-def poblar
+def poblar():
+    return 0
 
 
 
 #METODO PRINCIPAL MAIN
-
 if __name__ == '__main__':
     print(aparcamientos_url)
+    url= wikipedia_url + lista_rutas[0]+"_(Madrid)"
+    print(url)
+    resp=requests.get(url)
+    soup = BeautifulSoup(resp.content, 'html.parser')
+    print(soup)
     init_db()
     data = extraer_datos_aparcamientos(aparcamientos_url)
     datos = tranformar_datos_aparcamientos(data)
