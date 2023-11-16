@@ -7,7 +7,11 @@ from bs4 import BeautifulSoup
 wikipedia_url="https://es.wikipedia.org/wiki/"
 aparcamientos_url = "https://datos.madrid.es/egob/catalogo/202625-0-aparcamientos-publicos.xml"
 
-lista_rutas=["Centro","Arganzuela","Retiro","Salamanca","Chamartin","Tetuan","Chamberi","Fuencarral-El Pardo","Moncloa-Aravaca","Latina","Carabanchel","Usera","Puente de Vallecas","Moratalaz","Ciudad Lineal","Hortaleza","Villaverde","Villa de Vallecas","Vicalvaro","San Blas-Canillejas","Barajas"]
+#listas auxiliares para diferenciar los casos de extraccion de la informacion historica de cada distrito
+#existen casos donde no aparece el apartado historia en wikipedia, y se debe extraer el aspecto de cultura, o los primeros parrafos de la pagina
+diccWikipedia = { "Historia": ["Centro","Salamanca","Tetuan","Latina","Arganzuela","Chamartin","Chamberi","Carabanchel","Usera","Moratalaz","Ciudad Lineal","Hortaleza","Villaverde","Villa de Vallecas","Vicalvaro","San Blas-Canillejas","Barajas"], "Orígenes": ["Fuencarral-El Pardo"], "Nada": ["Retiro","Moncloa-Aravaca"], "Cultura":["Puente de Vallecas"]}
+lista_distritos=["Arganzuela","Chamartin","Chamberi","Fuencarral-El Pardo","Moncloa-Aravaca","Carabanchel","Usera","Puente de Vallecas","Moratalaz","Ciudad Lineal","Hortaleza","Villaverde","Villa de Vallecas","Vicalvaro","San Blas-Canillejas","Barajas","Centro","Retiro","Salamanca","Tetuan","Latina"]
+lista_distritos_especiales=["Centro","Retiro","Salamanca","Tetuan","Latina"] #distritos donde se debe añadir _(Madrid) al final de la url
 
 drop_tabla_aparcamientos = """DROP TABLE IF EXISTS aparcamientos;"""
 tabla_aparcamientos = """CREATE TABLE aparcamientos (
@@ -18,12 +22,12 @@ tabla_aparcamientos = """CREATE TABLE aparcamientos (
   coordenada_y REAL
 );"""
 
-#tabla de la informacion historica de los distritos (hay 21)
-drop_tabla_info="""DROP TABLE IF EXISTS info_historica;"""
-tabla_info_historica="""CREATE TABLE info_historica (
+#tabla de los distritos con su informacion historica(hay 21)
+drop_tabla_distritos="""DROP TABLE IF EXISTS distritos;"""
+tabla_distritos="""CREATE TABLE distritos (
   nombre TEXT PRIMARY KEY,
   historia TEXT ,
-  consideraciones TEXT 
+  consideraciones TEXT
  );"""
 
 
@@ -37,8 +41,8 @@ def init_db():
         print("conexion exitosa")
         cursor.execute(drop_tabla_aparcamientos)
         cursor.execute(tabla_aparcamientos)
-        cursor.execute(drop_tabla_info)
-        cursor.execute(tabla_info_historica)
+        cursor.execute(drop_tabla_distritos)
+        cursor.execute(tabla_distritos)
         cursor.close()
 
     except sqlite3.Error as error:
@@ -92,22 +96,59 @@ def cargar_datos_aparcamientos(datos):
 
 
 
-#METODOS PARA OBTENER INFORMACION HISTORICA
+#METODOS PARA OBTENER INFORMACION HISTORICA POR CADA DISTRITO
 
-def poblar():
-    return 0
+def extraer_distritos():
+
+    for i in lista_distritos:
+        
+        if(i in lista_distritos_especiales):
+            url = wikipedia_url + i + "_(Madrid)"
+        else:
+            url = wikipedia_url + i
+        print('\n\n'+ url + '\n\n')
+        resp=requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        if (i in diccWikipedia["Historia"]):
+            scraping('Historia',soup)
+
+        elif(i in diccWikipedia["Orígenes"]):
+            scraping('Orígenes',soup)
+
+        elif(i in diccWikipedia["Nada"]):
+            scraping('Nada',soup)
+
+        else:
+            scraping('Cultura',soup)
+
+
+
+def scraping(inicio,soup):
+
+    if (inicio=='Nada'):
+        titulo = soup.find('table', {'class': 'infobox geography vcard'})
+    else:
+        titulo = soup.find('span', {'id': inicio})
+
+    if titulo:
+        contenido = []
+
+        for elemento in titulo.find_all_next(['p', 'h2']):
+            if elemento.name == 'h2':
+                break  
+            contenido.append(elemento.get_text(strip=True))
+
+        print('\n'.join(contenido))
+
 
 
 
 #METODO PRINCIPAL MAIN
 if __name__ == '__main__':
     print(aparcamientos_url)
-    url= wikipedia_url + lista_rutas[0]+"_(Madrid)"
-    print(url)
-    resp=requests.get(url)
-    soup = BeautifulSoup(resp.content, 'html.parser')
-    print(soup)
     init_db()
+    extraer_distritos()
     data = extraer_datos_aparcamientos(aparcamientos_url)
     datos = tranformar_datos_aparcamientos(data)
     cargar_datos_aparcamientos(datos)
