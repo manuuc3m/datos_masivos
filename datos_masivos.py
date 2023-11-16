@@ -143,14 +143,15 @@ def scraping(inicio,soup):
         print('\n'.join(contenido))
 
 # Función para mostrar los distritos y capturar la elección del usuario
-'''
-def seleccionar_distrito():
+def mostrar_menu_distritos():
     print("En qué distrito quieres ver la ruta:")
     for i, distrito in enumerate(lista_distritos, start=1):
         print(f"{i}. {distrito}")
-    eleccion = int(input("Selecciona un número: ")) - 1
-    return lista_distritos[eleccion]
-'''
+    eleccion = int(input("Elige un número: "))
+    return lista_distritos[eleccion - 1]
+
+
+
 
 #METODO PRINCIPAL MAIN
 if __name__ == '__main__':
@@ -166,12 +167,12 @@ if __name__ == '__main__':
     cursor.execute(sqlite_select_Query)
     record = cursor.fetchall()
     print("Registros", record)
-    cursor.close()
-    
-    '''
-    distrito_seleccionado = seleccionar_distrito()
+    cursor.close()     
+    distrito_seleccionado = mostrar_menu_distritos()
     print(f"Has seleccionado: {distrito_seleccionado}")    
-    '''
+    webbrowser.open('file://' + os.path.realpath("C:\\Users\\datosmasivos\\Source\\Repos\\datos_masivos\\vista1.html"))
+
+
 
 
     
