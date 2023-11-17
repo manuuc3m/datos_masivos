@@ -24,7 +24,7 @@ def consola(d, b):
     entorno = jinja2.Environment(loader=ruta_de_plantillas)
     nombre_archivo_resultante = "resultado.html"
     template = entorno.get_template("plantilla.html")
-    path_resultado = "resultado.txt"
+    path_resultado = "resultado.html"
 
     # Eliminar el archivo resultado.txt si existe
     if os.path.exists(path_resultado):
