@@ -167,19 +167,20 @@ def actualizar_y_abrir_html(distrito_seleccionado, reset=True):
         pattern = r"Rutas de Senderismo en .*?</h1>"
         replacement = "Rutas de Senderismo en [Nombre del Distrito]</h1>"
         html_updated = re.sub(pattern, replacement, html_content)
+        # Guardar los cambios en el archivo HTML
+        with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
+            file.write(html_updated)        
+
     else:
         # Actualizar el contenido HTML con el nombre del distrito seleccionado
         pattern = r"Rutas de Senderismo en \[Nombre del Distrito\]</h1>"
         replacement = f"Rutas de Senderismo en {distrito_seleccionado}</h1>"
         html_updated = re.sub(pattern, replacement, html_content)
-        
-    # Guardar los cambios en el archivo HTML
-    with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
-        file.write(html_updated)
-
-    # Abriendo el archivo HTML en el navegador web
-    webbrowser.open('file://' + os.path.realpath(ruta_archivo_html))
-       
+        # Guardar los cambios en el archivo HTML
+        with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
+            file.write(html_updated)    
+        # Abriendo el archivo HTML en el navegador web
+        webbrowser.open('file://' + os.path.realpath(ruta_archivo_html))               
 
 
 #METODO PRINCIPAL MAIN
@@ -199,8 +200,8 @@ if __name__ == '__main__':
     cursor.close()     
     distrito_seleccionado = mostrar_menu_distritos()
     print(f"Has seleccionado: {distrito_seleccionado}")    
-    actualizar_y_abrir_html(distrito_seleccionado, True)  # Para restablecer
-    actualizar_y_abrir_html(distrito_seleccionado, False)  # Para actualizar
+    actualizar_y_abrir_html(distrito_seleccionado, True)  # Para restablecer html
+    actualizar_y_abrir_html(distrito_seleccionado, False)  # Para actualizar html
 
 
 
