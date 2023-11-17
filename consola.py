@@ -2,7 +2,9 @@ import sqlite3
 import click
 import jinja2
 import os
+import webbrowser
 
+#Retorna 
 def consultar(sqlite_select_Query):
     sqliteConnection = sqlite3.connect('SQLite_Python.db')
     cursor = sqliteConnection.cursor()
@@ -11,7 +13,7 @@ def consultar(sqlite_select_Query):
     cursor.close()
     return respuesta
 
-#Ejemplo de un comando: python3 consola.py --b RECOLETOS --d uno
+#Ejemplo de un comando: python3 consola.py --b RECOLETOS --d SALAMANCA
 @click.command()
 @click.option('--d', default='', help='Nombre del distrito. [uno,dos,tres]')
 @click.option('--b',help='Nomnre del barrio. [RECOLETOS,ETC,ETC]') 
@@ -43,6 +45,8 @@ def consola(d, b):
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
         results.write(template.render(aparcamientos=lista_aparcamientos,titulo="Aparcamientos"))
         print(f"... wrote {nombre_archivo_resultante}")
+    
+    webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
         
 if __name__ == '__main__':
     consola()
