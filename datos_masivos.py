@@ -151,6 +151,22 @@ def mostrar_menu_distritos():
     return lista_distritos[eleccion - 1]
 
 
+def actualizar_y_abrir_html(distrito_seleccionado):
+    ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
+    
+    # Leer el contenido original del HTML
+    with open(ruta_archivo_html, 'r') as file:
+        html_content = file.read()
+
+    # Actualizar el contenido HTML con el nombre del distrito seleccionado
+    html_updated = html_content.replace("[Nombre del Distrito]", distrito_seleccionado)
+
+    # Guardar los cambios en el archivo HTML
+    with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
+        file.write(html_updated)
+
+    # Abriendo el archivo HTML en el navegador web
+    webbrowser.open('file://' + os.path.realpath(ruta_archivo_html))
 
 
 #METODO PRINCIPAL MAIN
@@ -170,7 +186,7 @@ if __name__ == '__main__':
     cursor.close()     
     distrito_seleccionado = mostrar_menu_distritos()
     print(f"Has seleccionado: {distrito_seleccionado}")    
-    webbrowser.open('file://' + os.path.realpath("C:\\Users\\datosmasivos\\Source\\Repos\\datos_masivos\\vista1.html"))
+    actualizar_y_abrir_html(distrito_seleccionado)
 
 
 
