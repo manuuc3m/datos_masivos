@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Aparcamientos</title>
+</head>
+
+<body>
+  <h1>Resultados de: </h1> {{ titulo }} 
+  <ul>
+  {% for aparcamiento in aparcamientos %}
+    <li>
+      <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }}
+    </li>
+  {% endfor %}
+  </ul>
+</body>
+</html>

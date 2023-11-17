@@ -15,12 +15,14 @@ lista_distritos=["Arganzuela","Chamartin","Chamberi","Fuencarral-El Pardo","Monc
 lista_distritos_especiales=["Centro","Retiro","Salamanca","Tetuan","Latina"] #distritos donde se debe añadir _(Madrid) al final de la url
 
 drop_tabla_aparcamientos = """DROP TABLE IF EXISTS aparcamientos;"""
-tabla_aparcamientos = """CREATE TABLE aparcamientos (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre TEXT NOT NULL,
-  localidad TEXT NOT NULL,
-  coordenada_x REAL,
-  coordenada_y REAL
+tabla_aparcamientos = """CREATE TABLE aparcamientos 
+(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    localidad TEXT NOT NULL,
+    coordenada_x REAL,
+    coordenada_y REAL,
+    barrio TEXT
 );"""
 
 #tabla de los distritos con su informacion historica(hay 21)
@@ -57,11 +59,11 @@ def init_db():
 
 #METODOS PARA OBTENER APARCAMIENTOS
 
-def cargar_dato_aparcamientos(nombre, localidad, coordenada_x, coordenada_y):
+def cargar_dato_aparcamientos(nombre, localidad, coordenada_x, coordenada_y,barrio):
     try:
         sqliteConnection = sqlite3.connect('SQLite_Python.db')
         cursor = sqliteConnection.cursor()
-        count = cursor.execute("""INSERT INTO aparcamientos (nombre, localidad, coordenada_x, coordenada_y) VALUES (?, ?, ?, ?)""", (nombre, localidad, coordenada_x, coordenada_y))
+        count = cursor.execute("""INSERT INTO aparcamientos (nombre, localidad, coordenada_x, coordenada_y,barrio) VALUES (?, ?, ?, ?,?)""", (nombre, localidad, coordenada_x, coordenada_y,barrio))
         sqliteConnection.commit()
         print("agregado ", cursor.rowcount)
 
@@ -85,7 +87,8 @@ def tranformar_datos_aparcamientos(data):
         objeto = {}
         for atributo in contenido.iter('atributo'):
             NOMBRE = atributo.attrib['nombre']
-            if(NOMBRE == 'NOMBRE' or NOMBRE == 'LOCALIDAD' or NOMBRE == 'COORDENADA-X' or NOMBRE == 'COORDENADA-Y'):
+            print(NOMBRE)
+            if(NOMBRE == 'NOMBRE' or NOMBRE == 'LOCALIDAD' or NOMBRE == 'COORDENADA-X' or NOMBRE == 'COORDENADA-Y' or NOMBRE == 'BARRIO'):
                 objeto[NOMBRE] = atributo.text
         datos_transformados.append(objeto)
     return datos_transformados
@@ -93,7 +96,7 @@ def tranformar_datos_aparcamientos(data):
 
 def cargar_datos_aparcamientos(datos):
     for dato in datos:
-        cargar_dato_aparcamientos(dato['NOMBRE'], dato['LOCALIDAD'], dato['COORDENADA-X'], dato['COORDENADA-Y'])
+        cargar_dato_aparcamientos(dato['NOMBRE'], dato['LOCALIDAD'], dato['COORDENADA-X'], dato['COORDENADA-Y'], dato['BARRIO'])
 
 
 
