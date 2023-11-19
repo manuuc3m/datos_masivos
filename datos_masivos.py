@@ -156,11 +156,18 @@ def mostrar_menu_distritos():
 
 
 def actualizar_y_abrir_html(distrito_seleccionado, reset=True):
-    ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
+    #ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
     
-    # Leer el contenido original del HTML
+    # Obtiene el directorio del proyecto 
+    directorio_actual = os.getcwd()
+
+    # Construye la ruta completa al archivo HTML dentro del proyecto
+    ruta_archivo_html = os.path.join(directorio_actual, 'vista1.html')
+
+    # Abre el archivo HTML
     with open(ruta_archivo_html, 'r') as file:
         html_content = file.read()
+
 
     if reset:
         # Restablecer el marcador de posición del distrito a su valor por defecto
