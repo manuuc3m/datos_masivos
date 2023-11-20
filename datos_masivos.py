@@ -30,8 +30,7 @@ tabla_aparcamientos = """CREATE TABLE aparcamientos (
 drop_tabla_distritos="""DROP TABLE IF EXISTS distritos;"""
 tabla_distritos="""CREATE TABLE distritos (
   nombre TEXT PRIMARY KEY,
-  historia TEXT ,
-  consideraciones TEXT
+  historia TEXT NOT NULL
  );"""
 
 
@@ -88,7 +87,7 @@ def tranformar_datos_aparcamientos(data):
         objeto = {}
         for atributo in contenido.iter('atributo'):
             NOMBRE = atributo.attrib['nombre']
-            print(NOMBRE)
+            #print(NOMBRE)
             if(NOMBRE == 'NOMBRE' or NOMBRE == 'LOCALIDAD' or NOMBRE == 'COORDENADA-X' or NOMBRE == 'COORDENADA-Y' or NOMBRE == 'BARRIO' or NOMBRE == 'DISTRITO'):
                 objeto[NOMBRE] = atributo.text
         datos_transformados.append(objeto)
@@ -111,22 +110,22 @@ def extraer_distritos():
             url = wikipedia_url + i + "_(Madrid)"
         else:
             url = wikipedia_url + i
-        print('\n\n'+ url + '\n\n')
+        print(url)
         resp=requests.get(url)
         soup = BeautifulSoup(resp.text, 'html.parser')
-
         if (i in diccWikipedia["Historia"]):
-            scraping('Historia',soup)
+            info = scraping('Historia',soup)
 
         elif(i in diccWikipedia["Orígenes"]):
-            scraping('Orígenes',soup)
+            info = scraping('Orígenes',soup)
 
         elif(i in diccWikipedia["Nada"]):
-            scraping('Nada',soup)
+            info = scraping('Nada',soup)
 
         else:
-            scraping('Cultura',soup)
+            info = scraping('Cultura',soup)
 
+        cargar_info_distritos(i,info)
 
 
 def scraping(inicio,soup):
@@ -142,9 +141,36 @@ def scraping(inicio,soup):
         for elemento in titulo.find_all_next(['p', 'h2']):
             if elemento.name == 'h2':
                 break  
-            contenido.append(elemento.get_text(strip=True))
+            contenido.append(elemento.get_text(strip=False))
+        texto = ' \n'.join(contenido)
+        texto_limpiado = limpieza(texto)
+        #print(texto_limpiado)
+        return texto_limpiado
 
-        print('\n'.join(contenido))
+
+def limpieza(texto):
+    patron_referencias = r'(?:\(|\[)([0-9]{1,2})(?:\)|\])' #eliminar corchetes y parentesis de referencias de wikipedia
+
+    # Reemplazar las referencias con una cadena vacía
+    texto_limpio = re.sub(patron_referencias, '', texto)
+
+    return texto_limpio
+
+
+
+def cargar_info_distritos(distrito,texto):
+    try:
+        sqliteConnection = sqlite3.connect('SQLite_Python.db')
+        cursor = sqliteConnection.cursor()
+        count = cursor.execute("""INSERT INTO distritos (nombre, historia) VALUES (?, ?)""", (distrito, texto))
+        sqliteConnection.commit()
+
+    except sqlite3.Error as error:
+        print("Error conectando", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+
 
 # Función para mostrar los distritos y capturar la elección del usuario
 def mostrar_menu_distritos():
@@ -156,11 +182,18 @@ def mostrar_menu_distritos():
 
 
 def actualizar_y_abrir_html(distrito_seleccionado, reset=True):
-    ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
+    #ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
     
-    # Leer el contenido original del HTML
+    # Obtiene el directorio del proyecto 
+    directorio_actual = os.getcwd()
+
+    # Construye la ruta completa al archivo HTML dentro del proyecto
+    ruta_archivo_html = os.path.join(directorio_actual, 'vista1.html')
+
+    # Abre el archivo HTML
     with open(ruta_archivo_html, 'r') as file:
         html_content = file.read()
+
 
     if reset:
         # Restablecer el marcador de posición del distrito a su valor por defecto
@@ -188,6 +221,15 @@ if __name__ == '__main__':
     print(aparcamientos_url)
     init_db()
     extraer_distritos()
+    sqliteConnection = sqlite3.connect('SQLite_Python.db')
+    cursor = sqliteConnection.cursor()
+    query_distritos = "SELECT * from distritos"
+    distritos= cursor.execute(query_distritos)
+    #distritos = cursor.fetchall()
+    for i in distritos:
+        print(i)
+        print("\n\n\n\n\n\n")
+    cursor.close()     
     data = extraer_datos_aparcamientos(aparcamientos_url)
     datos = tranformar_datos_aparcamientos(data)
     cargar_datos_aparcamientos(datos)
