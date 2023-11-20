@@ -4,4 +4,4 @@ flaskr/__pycache__/
 /.vs
 /env
 /SQLite_Python.db
-resultado.html
+./resultado.html
