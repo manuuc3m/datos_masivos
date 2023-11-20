@@ -41,9 +41,15 @@ def consola(d, b):
     for a in respuesta:
         lista_aparcamientos.append({"id":a[0],"nombre":a[1],"localidad":a[2],"coordenada_x":a[3],"coordenada_y":a[4],"barrio":a[5]})
 
+
+    select_query_distrito = f"""SELECT historia FROM distritos WHERE nombre = '{d}';"""
+    respuesta_distrito = consultar(select_query_distrito)
+    historia_distrito = respuesta_distrito[0][0] if respuesta_distrito else "No hay información histórica disponible."
+    
+
     # Se escribe el archivo resultado.txt  
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(aparcamientos=lista_aparcamientos,titulo="Aparcamientos"))
+        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, titulo=d))
         print(f"... wrote {nombre_archivo_resultante}")
     
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
