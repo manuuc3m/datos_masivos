@@ -49,7 +49,7 @@ def consola(d, b):
 
     # Se escribe el archivo resultado.txt  
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, titulo=d))
+        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, nada="", distrito=d))
         print(f"... wrote {nombre_archivo_resultante}")
     
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
