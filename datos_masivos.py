@@ -170,51 +170,7 @@ def cargar_info_distritos(distrito,texto):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
-
-
-# Función para mostrar los distritos y capturar la elección del usuario
-def mostrar_menu_distritos():
-    print("En qué distrito quieres ver la ruta:")
-    for i, distrito in enumerate(lista_distritos, start=1):
-        print(f"{i}. {distrito}")
-    eleccion = int(input("Elige un número: "))
-    return lista_distritos[eleccion - 1]
-
-
-def actualizar_y_abrir_html(distrito_seleccionado, reset=True):
-    #ruta_archivo_html = r"C:\Users\datosmasivos\Source\Repos\datos_masivos\vista1.html"
-    
-    # Obtiene el directorio del proyecto 
-    directorio_actual = os.getcwd()
-
-    # Construye la ruta completa al archivo HTML dentro del proyecto
-    ruta_archivo_html = os.path.join(directorio_actual, 'vista1.html')
-
-    # Abre el archivo HTML
-    with open(ruta_archivo_html, 'r') as file:
-        html_content = file.read()
-
-
-    if reset:
-        # Restablecer el marcador de posición del distrito a su valor por defecto
-        pattern = r"Rutas de Senderismo en .*?</h1>"
-        replacement = "Rutas de Senderismo en [Nombre del Distrito]</h1>"
-        html_updated = re.sub(pattern, replacement, html_content)
-        # Guardar los cambios en el archivo HTML
-        with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
-            file.write(html_updated)        
-
-    else:
-        # Actualizar el contenido HTML con el nombre del distrito seleccionado
-        pattern = r"Rutas de Senderismo en \[Nombre del Distrito\]</h1>"
-        replacement = f"Rutas de Senderismo en {distrito_seleccionado}</h1>"
-        html_updated = re.sub(pattern, replacement, html_content)
-        # Guardar los cambios en el archivo HTML
-        with open(ruta_archivo_html, 'w', encoding='utf-8') as file:
-            file.write(html_updated)    
-        # Abriendo el archivo HTML en el navegador web
-        webbrowser.open('file://' + os.path.realpath(ruta_archivo_html))               
-
+           
 
 #METODO PRINCIPAL MAIN
 if __name__ == '__main__':
@@ -239,12 +195,8 @@ if __name__ == '__main__':
     cursor.execute(sqlite_select_Query)
     record = cursor.fetchall()
     print("Registros", record)
-    cursor.close()     
-    distrito_seleccionado = mostrar_menu_distritos()
-    print(f"Has seleccionado: {distrito_seleccionado}")    
-    actualizar_y_abrir_html(distrito_seleccionado, True)  # Para restablecer html
-    actualizar_y_abrir_html(distrito_seleccionado, False)  # Para actualizar html
-
+    cursor.close() 
+    
 
 
 
