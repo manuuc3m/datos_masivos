@@ -3,6 +3,10 @@ from datetime import datetime
 ENDPOINT = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/"
 API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAzNjM4ODVAYWx1bW5vcy51YzNtLmVzIiwianRpIjoiMDNiNWMyZTYtMTAxZC00ZDllLWFmMjUtMzQ3NDNlODY0Nzc4IiwiaXNzIjoiQUVNRVQiLCJpYXQiOjE3MDA1MDQ1NzcsInVzZXJJZCI6IjAzYjVjMmU2LTEwMWQtNGQ5ZS1hZjI1LTM0NzQzZTg2NDc3OCIsInJvbGUiOiIifQ.s0tV1bkizW0ZQtxR97rbelca3ISYrD3fAMF-WO8S8Hc"
 
+
+#Importar funciones auxiliares
+import aemet_adhoc_refiners as ref
+
 def query_aemet(citycode = '28079'): 
     # Set url with code
     url = ENDPOINT + citycode
@@ -39,6 +43,9 @@ def sub_query_data(data_route):
     meteorogical_data = response.json()
     return refined_data(meteorogical_data[0])
 
+
+
+
 def refined_data(data):
     # print('REFINANDO DATOS')
     prediccion_de_hoy = data['prediccion']['dia']
@@ -72,9 +79,14 @@ def refined_data(data):
     refined_data['nubosidad'] = prediccion_de_hoy['estadoCielo'][3:]
     refined_data['viento'] = prediccion_de_hoy['viento'][3:]
     refined_data['temperatura'] = prediccion_de_hoy['temperatura']
+    # Cada unos de estos campos tienen mucha basura que en el frontend no va a hacer falta
+    # Asi que se tienen que eliminar con funciones adhoc, no hay de otra
+
     refined_data['status'] = 200
-    # print('DATOS AEMET FINALMENTE REFINADOS: ')
+    
     return refined_data
+
+
 
 
 query_aemet()
