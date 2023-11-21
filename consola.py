@@ -46,7 +46,8 @@ def consola(d, b):
     respuesta_distrito = consultar(select_query_distrito)
     historia_distrito = respuesta_distrito[0][0] if respuesta_distrito else "No hay información histórica disponible."
     
-
+    
+    ## JONATHAN TODO: AGREGAR DATOS METEOROLOGICOS
     # Se escribe el archivo resultado.txt  
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
         results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, nada="", distrito=d))
