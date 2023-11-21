@@ -4,6 +4,9 @@ import jinja2
 import os
 import webbrowser
 
+#IMPORTAR AEMET MEDIADOR
+from aemet_mediador import query_aemet
+
 #Retorna 
 def consultar(sqlite_select_Query):
     sqliteConnection = sqlite3.connect('SQLite_Python.db')
@@ -47,10 +50,13 @@ def consola(d, b):
     historia_distrito = respuesta_distrito[0][0] if respuesta_distrito else "No hay información histórica disponible."
     
     
-    ## JONATHAN TODO: AGREGAR DATOS METEOROLOGICOS
+    ## RECUPERAR DATOS METEOROLOGICOS ACTUALES
+    # NOTA: La funcion query_aemet por defecto recuperar datos para Madrid, pero admite mas codigos de municipios de España
+    aemet_data_current = query_aemet()
+
     # Se escribe el archivo resultado.txt  
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, nada="", distrito=d))
+        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, nada="", distrito=d, datos_aemet = aemet_data_current))
         print(f"... wrote {nombre_archivo_resultante}")
     
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
