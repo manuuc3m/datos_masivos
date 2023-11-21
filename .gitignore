@@ -4,8 +4,6 @@ flaskr/__pycache__/
 /.vs
 /env
 /SQLite_Python.db
-/aemet_data_diario.json
-/return_datos_diarios.json
 /aemet_mediador.pyc
 __pycache__/
 /resultado.html
