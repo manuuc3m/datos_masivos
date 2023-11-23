@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Informacion de {{ distrito }}</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- bootsrap link -->
+  <!-- https://getbootstrap.com/docs/5.0/components/accordion/ -->
+</head>
+
+<body>
+  <h1>Resultados de {{ distrito }} </h1>  
+
+  <h2>Rutas de Senderismo:</h2>
+
+  <div>
+  {% for ruta in rutas %}
+    <div class="read-more-btn">
+      <h3>{{ ruta.nombre }}</h3>
+    </div>
+
+    <div class="hideText" id="detalles-{{ ruta.id }}">
+        <p>Distancia: {{ ruta.distancia }}</p>
+        <p>Tiempo: {{ ruta.tiempo }}</p>
+        <p>Dificultad: {{ ruta.dificultad }}</p>
+        <p>Tipo de Ruta: {{ ruta.tipo_ruta }}</p>
+        <p>Descripcion: {{ ruta.descripcion }}</p>
+        <p>Calidad de la ruta: {{ ruta.trailrank }}</p>
+        <p>Desnivel positivo: {{ ruta.des_pos }}</p>
+        <p>Desnivel negativo: {{ ruta.des_neg }}</p>
+        <p>Altitud maxima: {{ ruta.alt_max }}</p>
+        <p>Altitud minima: {{ ruta.alt_min }}</p>
+    </div>
+  {% endfor %}
+  </div>
+
+  <h2>Informacion historica del Distrito: </h2>
+  <p>{{ historia_distrito }}</p>
+
+  <!-- Tiempo meteorologico -->
+  <pre>
+    {{ datos_aemet }}
+  </pre>
+
+  <ul>
+  {% for aparcamiento in aparcamientos %}
+    <li>
+      <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }}
+    </li>
+  {% endfor %}
+  </ul>
+  
+  <script src="masinfo.js"></script>
+
+</body>
+</html>

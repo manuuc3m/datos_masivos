@@ -55,7 +55,7 @@ tabla_rutas = """CREATE TABLE rutas (
     tipo_ruta TEXT NOT NULL,
     descripcion TEXT NOT NULL,
     trailrank INTEGER,
-    des_posTEXT NOT NULL,
+    des_pos TEXT NOT NULL,
     des_neg TEXT NOT NULL,
     alt_max TEXT NOT NULL,
     alt_min TEXT NOT NULL
