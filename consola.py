@@ -49,8 +49,10 @@ def generar_y_abrir_html1(distrito):
     aparcamientos = consultar(select_query_aparcamientos)
     lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
 
-    # Datos meteorológicos (suponiendo que query_aemet() puede tomar un código de distrito como argumento)
-    # aemet_data_current = query_aemet(distrito)
+    # Datos meteorológicos. query_aemet() por defecto escrapea los datos climaticos de
+    # el municipio de Madrid, si se desea otro municipio, se especifica su codigo en formato
+    # string como parametro
+    # aemet_data_current = query_aemet()
 
     # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
