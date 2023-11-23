@@ -16,14 +16,19 @@ def consultar(sqlite_select_Query):
     cursor.close()
     return respuesta
 
+def listar_distritos():
+    query = "SELECT nombre FROM distritos"
+    distritos = consultar(query)
+    for i, distrito in enumerate(distritos):
+        print(f"{i + 1}. {distrito[0]}")
+    return distritos
+
+def seleccionar_distrito(distritos):
+    eleccion = int(input("Selecciona el número del distrito: "))
+    return distritos[eleccion - 1][0]
+
 #Ejemplo de un comando: python3 consola.py --b RECOLETOS --d SALAMANCA
-@click.command()
-@click.option('--d', default='', help='Nombre del distrito. [uno,dos,tres]')
-@click.option('--b',help='Nomnre del barrio. [RECOLETOS,ETC,ETC]') 
-def consola(d, b):
-    """Este programa permite generar archivo HTML a partir de criterios de busqueda."""
-    print("Distrito: ",d)
-    print("Barrio: ",b)
+def generar_y_abrir_html1(distrito):
 
     ruta_de_plantillas = jinja2.FileSystemLoader(searchpath="./plantillas")
     entorno = jinja2.Environment(loader=ruta_de_plantillas)
@@ -35,33 +40,71 @@ def consola(d, b):
     if os.path.exists(path_resultado):
         os.remove(path_resultado)
 
-    # Aqui se puede crear una funcion para armar la consulta en base a que parametros indican en el comando
-    select_query = f"""SELECT * FROM aparcamientos WHERE barrio = '{b}';"""
-    respuesta = consultar(select_query)
+    # Información histórica del distrito
+    select_query_distrito = f"""SELECT historia FROM distritos WHERE nombre = '{distrito}';"""
+    historia_distrito = consultar(select_query_distrito)[0][0]
 
-    #Se prepara una lista de diccionarios para pasar a la plantilla
-    lista_aparcamientos = []
-    for a in respuesta:
-        lista_aparcamientos.append({"id":a[0],"nombre":a[1],"localidad":a[2],"coordenada_x":a[3],"coordenada_y":a[4],"barrio":a[5]})
+    # Información de aparcamientos en el distrito
+    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}';"""
+    aparcamientos = consultar(select_query_aparcamientos)
+    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
 
+    # Datos meteorológicos (suponiendo que query_aemet() puede tomar un código de distrito como argumento)
+    # aemet_data_current = query_aemet(distrito)
 
-    select_query_distrito = f"""SELECT historia FROM distritos WHERE nombre = '{d}';"""
-    respuesta_distrito = consultar(select_query_distrito)
-    historia_distrito = respuesta_distrito[0][0] if respuesta_distrito else "No hay información histórica disponible."
-    
-    
-    ## RECUPERAR DATOS METEOROLOGICOS ACTUALES
-    # NOTA: La funcion query_aemet por defecto recuperar datos para Madrid, pero admite mas codigos de municipios de España
-    aemet_data_current = query_aemet()
-
-    # Se escribe el archivo resultado.txt  
+    # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(aparcamientos=lista_aparcamientos, historia_distrito=historia_distrito, nada="", distrito=d, datos_aemet = aemet_data_current))
+        results.write(template.render(distrito=distrito, historia_distrito=historia_distrito,))
+        #datos_aemet=aemet_data_current
         print(f"... wrote {nombre_archivo_resultante}")
+
+    
+    webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
+
+def listar_barrios(distrito):    
+    query = "SELECT DISTINCT barrio FROM aparcamientos WHERE distrito = '{distrito}'"
+    barrios = consultar(query)
+    for i, barrio in enumerate(barrios):
+        print(f"{i + 1}. {barrio[0]}")
+    return barrios
+
+def seleccionar_barrio(barrios):
+    eleccion = int(input("Si quieres ver información concreta de los barrios del distrito, selecciona el número del barrio: "))
+    return barrios[eleccion - 1][0]
+
+def generar_y_abrir_html2(distrito, barrio):
+
+    ruta_de_plantillas = jinja2.FileSystemLoader(searchpath="./plantillas")
+    entorno = jinja2.Environment(loader=ruta_de_plantillas)
+    nombre_archivo_resultante = "resultado.html"
+    template = entorno.get_template("plantilla2.html")
+    path_resultado = "resultado.html"
+
+    # Eliminar el archivo resultado.txt si existe
+    if os.path.exists(path_resultado):
+        os.remove(path_resultado)
+
+    # Información de aparcamientos en el distrito
+    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}' AND barrio = '{barrio}';"""
+    aparcamientos = consultar(select_query_aparcamientos)
+    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
+
+    # Escribe el archivo HTML
+    with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
+        results.write(template.render(distrito=distrito, barrio=barrio, aparcamientos=lista_aparcamientos))
+        #datos_aemet=aemet_data_current
+        print(f"... wrote {nombre_archivo_resultante}")
+
     
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
         
+        
 if __name__ == '__main__':
-    consola()
+    distritos = listar_distritos()
+    distrito_seleccionado = seleccionar_distrito(distritos)
+    generar_y_abrir_html1(distrito_seleccionado)
+    barrios = listar_barrios(distrito_seleccionado)
+    barrio_seleccionado = seleccionar_barrio(barrios)
+    generar_y_abrir_html2(distrito_seleccionado, barrio_seleccionado)
 
 
