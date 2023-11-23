@@ -33,7 +33,7 @@ def generar_y_abrir_html1(distrito):
     ruta_de_plantillas = jinja2.FileSystemLoader(searchpath="./plantillas")
     entorno = jinja2.Environment(loader=ruta_de_plantillas)
     nombre_archivo_resultante = "resultado.html"
-    template = entorno.get_template("plantilla.html")
+    template = entorno.get_template("plantilla1.html")
     path_resultado = "resultado.html"
 
     # Eliminar el archivo resultado.txt si existe
@@ -62,7 +62,7 @@ def generar_y_abrir_html1(distrito):
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
 
 def listar_barrios(distrito):    
-    query = "SELECT DISTINCT barrio FROM aparcamientos WHERE distrito = '{distrito}'"
+    query = f"SELECT barrio FROM aparcamientos;"
     barrios = consultar(query)
     for i, barrio in enumerate(barrios):
         print(f"{i + 1}. {barrio[0]}")
@@ -84,10 +84,16 @@ def generar_y_abrir_html2(distrito, barrio):
     if os.path.exists(path_resultado):
         os.remove(path_resultado)
 
-    # Información de aparcamientos en el distrito
-    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}' AND barrio = '{barrio}';"""
-    aparcamientos = consultar(select_query_aparcamientos)
-    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
+    # Aqui se puede crear una funcion para armar la consulta en base a que parametros indican en el comando
+    select_query = f"""SELECT * FROM aparcamientos WHERE barrio = '{barrio}';"""
+    respuesta = consultar(select_query)
+
+    #Se prepara una lista de diccionarios para pasar a la plantilla
+    lista_aparcamientos = []
+    for a in respuesta:
+        lista_aparcamientos.append({"id":a[0],"nombre":a[1],"localidad":a[2],"coordenada_x":a[3],"coordenada_y":a[4],"barrio":a[5]})
+
+
 
     # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
@@ -102,7 +108,7 @@ def generar_y_abrir_html2(distrito, barrio):
 if __name__ == '__main__':
     distritos = listar_distritos()
     distrito_seleccionado = seleccionar_distrito(distritos)
-    generar_y_abrir_html1(distrito_seleccionado)
+    #generar_y_abrir_html1(distrito_seleccionado)
     barrios = listar_barrios(distrito_seleccionado)
     barrio_seleccionado = seleccionar_barrio(barrios)
     generar_y_abrir_html2(distrito_seleccionado, barrio_seleccionado)
