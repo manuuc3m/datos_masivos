@@ -15,6 +15,17 @@ diccWikipedia = { "Historia": ["Centro","Salamanca","Tetuan","Latina","Arganzuel
 lista_distritos=["Arganzuela","Chamartin","Chamberi","Fuencarral-El Pardo","Moncloa-Aravaca","Carabanchel","Usera","Puente de Vallecas","Moratalaz","Ciudad Lineal","Hortaleza","Villaverde","Villa de Vallecas","Vicalvaro","San Blas-Canillejas","Barajas","Centro","Retiro","Salamanca","Tetuan","Latina"]
 lista_distritos_especiales=["Centro","Retiro","Salamanca","Tetuan","Latina"] #distritos donde se debe añadir _(Madrid) al final de la url
 
+# Diccionario clave-valor para mantener consistencia entre distritos
+diccWikiloc = {"Arganzuela" : ["arganzuela"],"Chamartin" : ["chamartin-de-la-rosa"],"Chamberi" : ["chamberi"], "Fuencarral-El Pardo" : ["fuencarral-el-pardo"],
+"Moncloa-Aravaca" : ["moncloa", "aravaca"], "Carabanchel" : ["carabanchel"],"Usera" : ["usera"], "Puente de Vallecas" : ["puente-de-vallecas"],
+"Moratalaz" : ["moratalaz"], "Ciudad Lineal" : ["ciudad-lineal"], "Hortaleza" : ["hortaleza"], "Villaverde" : ["villaverde"], "Villa de Vallecas" : ["villa-de-vallecas"],
+"Vicalvaro" : ["vicalvaro"], "San Blas-Canillejas" : ["san-blas", "canillejas"], "Barajas" : ["barajas-de-madrid"],"Centro" : ["centro"],
+"Retiro" : ["retiro"], "Salamanca" : ["salamanca"], "Tetuan" : ["tetuan-de-las-victorias"], "Latina" : ["la-latina"]}
+
+# Cabeceras generales
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36", }
+
+
 drop_tabla_aparcamientos = """DROP TABLE IF EXISTS aparcamientos;"""
 tabla_aparcamientos = """CREATE TABLE aparcamientos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +44,23 @@ tabla_distritos="""CREATE TABLE distritos (
   historia TEXT NOT NULL
  );"""
 
+ #tabla con las rutas, cada una tiene el distrito al que pertenece
+drop_tabla_rutas = """DROP TABLE IF EXISTS rutas;"""
+tabla_rutas = """CREATE TABLE rutas (
+    nombre TEXT PRIMARY KEY,
+    distrito TEXT NOT NULL,
+    distancia TEXT NOT NULL,
+    tiempo TEXT NOT NULL,
+    dificultad TEXT NOT NULL,
+    tipo_ruta TEXT NOT NULL,
+    descripcion TEXT NOT NULL,
+    trailrank INTEGER,
+    des_posTEXT NOT NULL,
+    des_neg TEXT NOT NULL,
+    alt_max TEXT NOT NULL,
+    alt_min TEXT NOT NULL
+);"""
+
 
 
  #INIT
@@ -46,6 +74,8 @@ def init_db():
         cursor.execute(tabla_aparcamientos)
         cursor.execute(drop_tabla_distritos)
         cursor.execute(tabla_distritos)
+        cursor.execute(drop_tabla_rutas)
+        cursor.execute(tabla_rutas)
         cursor.close()
 
     except sqlite3.Error as error:
@@ -170,6 +200,92 @@ def cargar_info_distritos(distrito,texto):
     finally:
         if sqliteConnection:
             sqliteConnection.close()
+
+
+            
+#METODOS PARA OBTENER RUTAS DE SENDERISMO POR CADA DISTRITO
+
+def extraer_rutas_senderismo():
+    for distrito in lista_distritos:
+        extraer_rutas_distrito(distrito)
+
+def extraer_rutas_distrito(distrito):
+
+    #Extraer info de un distrito
+    for subdistrito in diccWikiloc[distrito]:
+        distrito_url = "https://es.wikiloc.com/rutas/senderismo/espana/comunidad-de-madrid/" + subdistrito
+        resp_distrito = requests.get(distrito_url, headers=headers)
+        soupDistrito = BeautifulSoup(resp_distrito.text, 'html.parser')
+
+        #Extraer links de las rutas del distrito
+        lista_links_rutas = []
+        nombreRutas = soupDistrito.find_all('h2', {'class': 'trail__title'})
+        for ruta in nombreRutas:
+            lista_links_rutas.append(ruta.findChild("a")['href'])
+
+        for link in lista_links_rutas:
+            extraer_info_ruta(link, distrito)
+
+def extraer_info_ruta(url, distrito):
+
+    # Extraer info de una ruta
+    ruta_url = "https://es.wikiloc.com/" + url
+    resp_ruta = requests.get(ruta_url, headers=headers)
+    soupRuta = BeautifulSoup(resp_ruta.text, 'html.parser')
+
+    # Encontrar nombre
+    nombre_ruta_element = soupRuta.find('h1', {'class': 'd-inline dont-break-out'})
+    nombre = nombre_ruta_element.text.strip()
+
+    # Encontrar informacion principal
+    info_ruta_element = soupRuta.find('div', {'class': 'data-items'})
+    info_ruta = info_ruta_element.find_all('span')
+    hasStar = 0
+
+    if(len(info_ruta) == 10):
+        hasStar = 2
+
+    distancia = info_ruta[0].text
+    des_pos = info_ruta[1].text
+    dificultad = info_ruta[2].text
+    des_neg = info_ruta[3].text
+    alt_max = info_ruta[4].text
+    trailrank = info_ruta[5].text
+    alt_min = info_ruta[6 + hasStar].text
+    tipo_ruta = info_ruta[7 + hasStar].text
+
+    # Encontrar tiempo
+    moreInfo_element = soupRuta.find('div', {'class': 'more-data'})
+    tiempo_ruta_element = moreInfo_element.find('span')
+    tiempo = tiempo_ruta_element.text.strip()
+
+    # Encontrar descripción
+    descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out'})
+    if(descripcion_element == None):
+        descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out description-original'})
+    if(descripcion_element != None): descripcion = descripcion_element.text
+    else: descripcion = "No hay descripcion para esta ruta"
+
+    cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min)
+
+def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min):
+    try:
+        sqliteConnection = sqlite3.connect('SQLite_Python.db')
+        cursor = sqliteConnection.cursor()
+        count = cursor.execute(
+            """INSERT INTO rutas (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)""",
+            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, int(trailrank), des_pos, des_neg, alt_max, alt_min))
+        sqliteConnection.commit()
+        print("agregado", cursor.rowcount)
+
+    except sqlite3.Error as error:
+        print("Error conectando", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+
+
            
 
 #METODO PRINCIPAL MAIN
@@ -177,6 +293,7 @@ if __name__ == '__main__':
     print(aparcamientos_url)
     init_db()
     extraer_distritos()
+    extraer_rutas_senderismo()
     sqliteConnection = sqlite3.connect('SQLite_Python.db')
     cursor = sqliteConnection.cursor()
     query_distritos = "SELECT * from distritos"
