@@ -38,41 +38,18 @@ def generar_y_abrir_html1(distrito):
 
     # Eliminar el archivo resultado.txt si existe
     if os.path.exists(path_resultado):
-        os.remove(path_resultado)
+        os.remove(path_resultado)    
+    
+    #Informacion de rutas
 
-    # Información histórica del distrito
-    select_query_distrito = f"""SELECT historia FROM distritos WHERE nombre = '{distrito}';"""
-    historia_distrito = consultar(select_query_distrito)[0][0]
-
-    # Información de aparcamientos en el distrito
-    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}';"""
-    aparcamientos = consultar(select_query_aparcamientos)
-    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
-
-    # Datos meteorológicos. query_aemet() por defecto escrapea los datos climaticos de
-    # el municipio de Madrid, si se desea otro municipio, se especifica su codigo en formato
-    # string como parametro
-    # aemet_data_current = query_aemet()
 
     # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(distrito=distrito, historia_distrito=historia_distrito,))
-        #datos_aemet=aemet_data_current
+        results.write(template.render(distrito=distrito))
         print(f"... wrote {nombre_archivo_resultante}")
 
     
     webbrowser.open('file://' + os.path.realpath(nombre_archivo_resultante))
-
-def listar_barrios(distrito):    
-    query = f"SELECT barrio FROM aparcamientos;"
-    barrios = consultar(query)
-    for i, barrio in enumerate(barrios):
-        print(f"{i + 1}. {barrio[0]}")
-    return barrios
-
-def seleccionar_barrio(barrios):
-    eleccion = int(input("Si quieres ver información concreta de los barrios del distrito, selecciona el número del barrio: "))
-    return barrios[eleccion - 1][0]
 
 def generar_y_abrir_html2(distrito, barrio):
 
@@ -94,12 +71,25 @@ def generar_y_abrir_html2(distrito, barrio):
     lista_aparcamientos = []
     for a in respuesta:
         lista_aparcamientos.append({"id":a[0],"nombre":a[1],"localidad":a[2],"coordenada_x":a[3],"coordenada_y":a[4],"barrio":a[5]})
+    
+    # Información histórica del distrito
+    select_query_distrito = f"""SELECT historia FROM distritos WHERE nombre = '{distrito}';"""
+    historia_distrito = consultar(select_query_distrito)[0][0]
 
+    # Información de aparcamientos en el distrito
+    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}';"""
+    aparcamientos = consultar(select_query_aparcamientos)
+    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
+
+    # Datos meteorológicos. query_aemet() por defecto escrapea los datos climaticos de
+    # el municipio de Madrid, si se desea otro municipio, se especifica su codigo en formato
+    # string como parametro
+    # aemet_data_current = query_aemet()
 
 
     # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
-        results.write(template.render(distrito=distrito, barrio=barrio, aparcamientos=lista_aparcamientos))
+        results.write(template.render(distrito=distrito, barrio=barrio, historia_distrito=historia_distrito, aparcamientos=lista_aparcamientos))
         #datos_aemet=aemet_data_current
         print(f"... wrote {nombre_archivo_resultante}")
 
@@ -110,9 +100,6 @@ def generar_y_abrir_html2(distrito, barrio):
 if __name__ == '__main__':
     distritos = listar_distritos()
     distrito_seleccionado = seleccionar_distrito(distritos)
-    #generar_y_abrir_html1(distrito_seleccionado)
-    barrios = listar_barrios(distrito_seleccionado)
-    barrio_seleccionado = seleccionar_barrio(barrios)
-    generar_y_abrir_html2(distrito_seleccionado, barrio_seleccionado)
+    generar_y_abrir_html1(distrito_seleccionado)
 
 

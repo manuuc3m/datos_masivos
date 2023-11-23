@@ -9,21 +9,6 @@
 
 <body>
   <h1>Resultados de: </h1> {{ distrito }} 
-  <ul>
-  {% for aparcamiento in aparcamientos %}
-    <li>
-      <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }}
-    </li>
-  {% endfor %}
-  </ul>
-  <h2>Informacion historica del Distrito: </h2> {{ nada }} 
-  <p>{{ historia_distrito }}</p>
-
-
-  <!-- Tiempo meteorologico -->
-  <pre>
-    {{ datos_aemet }}
-  </pre>
   
 </body>
 </html>
