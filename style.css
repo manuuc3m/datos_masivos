@@ -10,6 +10,16 @@
     cursor: pointer;
 }
 
+h1 {
+    font-family: sans-serif;
+}
+
+h2, p{
+    font-family: Arial;    
+}
+
+
+
 
 /* tabla aparcamientos */
 
