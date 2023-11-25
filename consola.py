@@ -24,8 +24,15 @@ def listar_distritos():
     return distritos
 
 def seleccionar_distrito(distritos):
-    eleccion = int(input("Selecciona el número del distrito: "))
-    return distritos[eleccion - 1][0]
+    while True:
+        try:
+            eleccion = int(input("Selecciona el número del distrito: "))
+            if 1 <= eleccion <= len(distritos):
+                return distritos[eleccion - 1][0]
+            else:
+                print("Número fuera de rango. Elige de nuevo.")
+        except ValueError:
+            print("Entrada inválida. Por favor, introduce un número.")
 
 def generar_y_abrir_html(distrito):
 

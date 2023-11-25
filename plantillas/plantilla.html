@@ -9,50 +9,68 @@
 </head>
 
 <body>
-  <h1>Resultados de {{ distrito }} </h1>  
+    <h1>Resultados de {{ distrito }} </h1>
 
-  <h2>Rutas de Senderismo:</h2>
-  <p>Haz click en una ruta para ver mas informacion.</p>
+    <h2>Rutas de Senderismo:</h2>
+    <p>Haz click en una ruta para ver mas informacion.</p>
 
-  <div>
-  {% for ruta in rutas %}
-    <div class="read-more-btn">
-      <h3 class="clickableTitle">{{ ruta.nombre }}</h3>
+    <div>
+        {% for ruta in rutas %}
+        <div class="read-more-btn">
+            <h3 class="clickableTitle">{{ ruta.nombre }}</h3>
+        </div>
+
+        <div class="hideText" id="detalles-{{ ruta.id }}">
+            <p>Distancia: {{ ruta.distancia }}</p>
+            <p>Tiempo: {{ ruta.tiempo }}</p>
+            <p>Dificultad: {{ ruta.dificultad }}</p>
+            <p>Tipo de Ruta: {{ ruta.tipo_ruta }}</p>
+            <p>Descripcion: {{ ruta.descripcion }}</p>
+            <p>Calidad de la ruta: {{ ruta.trailrank }}</p>
+            <p>Desnivel positivo: {{ ruta.des_pos }}</p>
+            <p>Desnivel negativo: {{ ruta.des_neg }}</p>
+            <p>Altitud maxima: {{ ruta.alt_max }}</p>
+            <p>Altitud minima: {{ ruta.alt_min }}</p>
+        </div>
+        {% endfor %}
     </div>
 
-    <div class="hideText" id="detalles-{{ ruta.id }}">
-        <p>Distancia: {{ ruta.distancia }}</p>
-        <p>Tiempo: {{ ruta.tiempo }}</p>
-        <p>Dificultad: {{ ruta.dificultad }}</p>
-        <p>Tipo de Ruta: {{ ruta.tipo_ruta }}</p>
-        <p>Descripcion: {{ ruta.descripcion }}</p>
-        <p>Calidad de la ruta: {{ ruta.trailrank }}</p>
-        <p>Desnivel positivo: {{ ruta.des_pos }}</p>
-        <p>Desnivel negativo: {{ ruta.des_neg }}</p>
-        <p>Altitud maxima: {{ ruta.alt_max }}</p>
-        <p>Altitud minima: {{ ruta.alt_min }}</p>
-    </div>
-  {% endfor %}
-  </div>
+    <h2>Informacion historica del Distrito: </h2>    
+            <p>{{ historia_distrito }}</p>
+        
 
-  <h2>Informacion historica del Distrito: </h2>
-  <p>{{ historia_distrito }}</p>
-  
-  <h2>Tiempo meteorologico:</h2>
-  <pre>
+        <h2>Tiempo meteorologico:</h2>
+        <pre>
     {{ datos_aemet }}
   </pre>
 
-  <h2>Aparcamientos: </h2>
-  <ul>
-  {% for aparcamiento in aparcamientos %}
-      <li>
-          <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }} | {{ aparcamiento.distrito }}
-      </li>
-  {% endfor %}
-  </ul>
-  
-  <script src="masinfo.js"></script>
+        <h2>Aparcamientos: </h2>
+<table class="tabla-aparcamientos">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Localidad</th>
+      <th>Coordenada X</th>
+      <th>Coordenada Y</th>
+      <th>Barrio</th>
+      <th>Distrito</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for aparcamiento in aparcamientos %}
+      <tr>
+        <td>{{ aparcamiento.nombre }}</td>
+        <td>{{ aparcamiento.localidad }}</td>
+        <td>{{ aparcamiento.coordenada_x }}</td>
+        <td>{{ aparcamiento.coordenada_y }}</td>
+        <td>{{ aparcamiento.barrio }}</td>
+        <td>{{ aparcamiento.distrito }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+        <script src="masinfo.js"></script>
 
 </body>
 </html>
