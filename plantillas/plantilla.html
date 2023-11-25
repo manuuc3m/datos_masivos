@@ -17,7 +17,7 @@
   <div>
   {% for ruta in rutas %}
     <div class="read-more-btn">
-      <h3>{{ ruta.nombre }}</h3>
+      <h3 class="clickableTitle">{{ ruta.nombre }}</h3>
     </div>
 
     <div class="hideText" id="detalles-{{ ruta.id }}">
@@ -46,9 +46,9 @@
   <h2>Aparcamientos: </h2>
   <ul>
   {% for aparcamiento in aparcamientos %}
-    <li>
-      <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }}
-    </li>
+      <li>
+          <em>{{ aparcamiento.nombre }}:</em> {{ aparcamiento.localidad }} | {{ aparcamiento.coordenada_x }} | {{ aparcamiento.coordenada_y }} | {{ aparcamiento.barrio }} | {{ aparcamiento.distrito }}
+      </li>
   {% endfor %}
   </ul>
   

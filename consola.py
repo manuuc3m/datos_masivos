@@ -49,9 +49,9 @@ def generar_y_abrir_html(distrito):
     historia_distrito = consultar(select_query_distrito)[0][0]
            
     # Información de aparcamientos en el distrito
-    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito}';"""
+    select_query_aparcamientos = f"""SELECT * FROM aparcamientos WHERE distrito = '{distrito.upper()}';"""
     aparcamientos = consultar(select_query_aparcamientos)
-    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5]} for a in aparcamientos]
+    lista_aparcamientos = [{"id": a[0], "nombre": a[1], "localidad": a[2], "coordenada_x": a[3], "coordenada_y": a[4], "barrio": a[5], "distrito": a[6]} for a in aparcamientos]
 
     # Datos meteorológicos. query_aemet() por defecto escrapea los datos climaticos de
     # el municipio de Madrid, si se desea otro municipio, se especifica su codigo en formato

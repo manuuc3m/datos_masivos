@@ -5,3 +5,7 @@
 .showText {
   display: block;
 }
+
+.clickableTitle {
+    cursor: pointer;
+}
