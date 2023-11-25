@@ -11,7 +11,7 @@
 }
 
 
-/* espaciado tablas */
+/* tabla aparcamientos */
 
 .tabla-aparcamientos {
     border-collapse: collapse;
@@ -31,21 +31,63 @@
 .tabla-aparcamientos th,
 .tabla-aparcamientos td {
     padding: 12px 15px;
+    border-right: 1px solid #dddddd;
 }
 
 .tabla-aparcamientos tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
-    .tabla-aparcamientos tbody tr:nth-of-type(even) {
-        background-color: #f3f3f3;
+.tabla-aparcamientos tbody tr:nth-of-type(even) {
+     background-color: #f3f3f3;
+}
+
+.tabla-aparcamientos tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.tabla-aparcamientos tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+
+/* tabla rutas */
+
+.tabla-rutas {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+    .tabla-rutas thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
     }
 
-    .tabla-aparcamientos tbody tr:last-of-type {
-        border-bottom: 2px solid #009879;
+    .tabla-rutas th,
+    .tabla-rutas td {
+        padding: 12px 15px;
+        border-right: 1px solid #dddddd;
     }
 
-    .tabla-aparcamientos tbody tr.active-row {
-        font-weight: bold;
-        color: #009879;
+    .tabla-rutas tbody tr {
+        border-bottom: 1px solid #dddddd;
     }
+
+        .tabla-rutas tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .tabla-rutas tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        .tabla-rutas tbody tr.active-row {
+            font-weight: bold;
+            color: #009879;
+        }
