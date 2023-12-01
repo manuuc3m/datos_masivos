@@ -75,7 +75,7 @@ def refined_data(data):
     refined_data['periodos'] = ['00:00 - 24:00', '00:00 - 12:00','12:00 - 24:00' ,'00:00 - 06:00', '06:00 - 12:00', '12:00 - 18:00', '18:00 - 24:00']
 
     refined_data['probabilidad_precipitacion'] = ref.refine_precipitacion(prediccion_de_hoy['probPrecipitacion'])
-    refined_data['probabilidad_nieve'] = ref.refine_nieve(prediccion_de_hoy['cotaNieveProv'])
+    refined_data['cota_nieve'] = ref.refine_nieve(prediccion_de_hoy['cotaNieveProv'])
     refined_data['nubosidad'] = ref.refine_nubosidad(prediccion_de_hoy['estadoCielo'])
     refined_data['viento'] = ref.refine_viento(prediccion_de_hoy['viento'])
     refined_data['temperatura'] = prediccion_de_hoy['temperatura']
