@@ -7,7 +7,7 @@
     <!-- bootsrap link -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
 </head>
@@ -81,9 +81,20 @@
         </tbody>
     </table>
 
+    <hr>
+    <h3 class="title_aemet">DATOS METEOROLÓGICOS. Fuente: <a href="https://opendata.aemet.es/centrodedescargas/inicio">Aemet Data</a></h3>
 
-    <h3>DATOS METEOROLÓGICOS. Fuente: <a href="https://opendata.aemet.es/centrodedescargas/inicio">Aemet Data</a></h3>
-
+    <div class="aclaraciones">
+        <h3 class="aclaraciones__title">Aclaraciones de interpretacion  <b>!</b></h3>
+        <p class="aclaraciones__content">
+            En ocasiones, aemet no otorga las previsiones para cada periodo específico teniendo en cuenta que ya lo indica para el día completo.
+            Por ello, se indica con un "-" en la casilla correspondiente
+            <br>
+            No obstante, hay casos que si que los adjunta específicamente, por lo que aparece en la casilla el dato correspondiente.
+            <br>
+            En otros casos, para un parámetro climatológico ni siquiera hay datos, por lo que se rellenan las casillas enteras con "-"
+        </p>
+      </div>
     <div class="aemet_data_container">
         <table class="table table-bordered tablaemet">
             <thead>
@@ -116,7 +127,7 @@
                 <tr>
                     <!-- td con las 7 precipitaciones probabilidad_precipitacion-->
                     {% for prec in datos_aemet.probabilidad_precipitacion%}
-                        <td>{{ prec }}</td>
+                    <td>{{ prec }}</td>
                     {% endfor %}
                 </tr>
               </tbody>
