@@ -105,3 +105,16 @@ h2, p{
 
 
 /* DATOS AEMET */
+.aemet_data_container {
+    padding: 1rem;
+}
+
+.aemet_data_container .tablaemet thead th {
+    color: white;
+    background-color: #009879;
+    text-align: center;
+}
+
+.aemet_data_container .tablaemet td {
+    text-align: center;
+}
