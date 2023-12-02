@@ -1,9 +1,9 @@
 .hideText {
-  display: none;
+    display: none;
 }
 
 .showText {
-  display: block;
+    display: block;
 }
 
 .clickableTitle {
@@ -14,8 +14,9 @@ h1 {
     font-family: sans-serif;
 }
 
-h2, p{
-    font-family: Arial;    
+h2,
+p {
+    font-family: Arial;
 }
 
 
@@ -49,7 +50,7 @@ h2, p{
 }
 
 .tabla-aparcamientos tbody tr:nth-of-type(even) {
-     background-color: #f3f3f3;
+    background-color: #f3f3f3;
 }
 
 .tabla-aparcamientos tbody tr:last-of-type {
@@ -73,40 +74,73 @@ h2, p{
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
-    .tabla-rutas thead tr {
-        background-color: #009879;
-        color: #ffffff;
-        text-align: left;
-    }
+.tabla-rutas thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
 
-    .tabla-rutas th,
-    .tabla-rutas td {
-        padding: 12px 15px;
-        border-right: 1px solid #dddddd;
-    }
+.tabla-rutas th,
+.tabla-rutas td {
+    padding: 12px 15px;
+    border-right: 1px solid #dddddd;
+}
 
-    .tabla-rutas tbody tr {
-        border-bottom: 1px solid #dddddd;
-    }
+.tabla-rutas tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
 
-        .tabla-rutas tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
-        }
+.tabla-rutas tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
 
-        .tabla-rutas tbody tr:last-of-type {
-            border-bottom: 2px solid #009879;
-        }
+.tabla-rutas tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
 
-        .tabla-rutas tbody tr.active-row {
-            font-weight: bold;
-            color: #009879;
-        }
+.tabla-rutas tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
 
 
 
 /* DATOS AEMET */
+.title_aemet {
+    position: relative;
+    left: 1rem;
+}
+
+.aclaraciones {
+    border: 1px solid #009879;
+    position: relative;
+    /* width: 45rem; */
+    min-width: 10rem;
+    max-width: 50rem;
+    margin-left: 1rem;
+}
+
+.aclaraciones__title {
+    background-color: #009879;
+    margin-bottom: 0;
+    color: white;
+    padding: 0.5rem 0rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+.aclaraciones__title:hover+p {
+    display: block;
+}
+
+.aclaraciones__content {
+    padding: 1rem;
+    display: none;
+}
+
 .aemet_data_container {
     padding: 1rem;
+    max-width: 75rem;
 }
 
 .aemet_data_container .tablaemet thead th {
@@ -118,3 +152,5 @@ h2, p{
 .aemet_data_container .tablaemet td {
     text-align: center;
 }
+
+
