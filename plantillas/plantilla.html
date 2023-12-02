@@ -5,7 +5,11 @@
     <title>Informacion de {{ distrito }}</title>
     <link rel="stylesheet" href="style.css">
     <!-- bootsrap link -->
-    <!-- https://getbootstrap.com/docs/5.0/components/accordion/ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -78,15 +82,86 @@
     </table>
 
 
-    <hr>
     <h3>DATOS METEOROLÓGICOS. Fuente: <a href="https://opendata.aemet.es/centrodedescargas/inicio">Aemet Data</a></h3>
-    <hr>
-    <pre>
-        {{ datos_aemet }}
-    </pre>
 
     <div class="aemet_data_container">
-
+        <table class="table table-bordered tablaemet">
+            <thead>
+                <th colspan="7"> PERIODOS </th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>DIA</td>
+                  <td>1ª Mitad</td>
+                  <td>2ª Mitad</td>
+                  <td>MADRUGADA</td>
+                  <td>MAÑANA</td>
+                  <td>TARDE</td>
+                  <td>NOCHE</td>
+                </tr>
+                <tr>
+                  <td>00:00 - 24:00</td>
+                  <td>00:00 - 12:00</td>
+                  <td>12:00 - 24:00</td>
+                  <td>00:00 - 06:00</td>
+                  <td>06:00 - 12:00</td>
+                  <td>12:00 - 18:00</td>
+                  <td>18:00 - 24:00</td>
+                </tr>
+              </tbody>
+              <thead>
+                <th colspan="7">PRECIPITACIONES</th>
+              </thead>
+              <tbody>
+                <tr>
+                    <!-- td con las 7 precipitaciones probabilidad_precipitacion-->
+                    {% for prec in datos_aemet.probabilidad_precipitacion%}
+                        <td>{{ prec }}</td>
+                    {% endfor %}
+                </tr>
+              </tbody>
+              <thead> <th colspan="7">NUBOSIDAD</th></thead>
+              <tbody>
+                <tr>
+                    <!-- td con nubosidad -->
+                    {% for nub in datos_aemet.nubosidad %}
+                    <td>{{ nub }}</td>
+                    {% endfor %}
+                </tr>
+              </tbody>
+              <thead><th colspan="7">COTAS DE NIEVE</th></thead>
+              <tbody>
+                <tr>
+                    {% for data in datos_aemet.cota_nieve %}
+                    <td>{{ data }}</td>
+                    {% endfor %}
+                </tr>
+              </tbody>
+              <thead><th colspan="7">VIENTOS</th></thead>
+              <tbody>
+                <tr>
+                    {% for data in datos_aemet.viento %}
+                    <td>{{ data.direccion}}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for data in datos_aemet.viento %}
+                    <td>{{ data.velocidad}}</td>
+                    {% endfor %} 
+                </tr>
+              </tbody>
+              <thead>
+                <th colspan="7">TEMPERATURAS</th>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="temperaturas"><b>Máxima: </b> {{datos_aemet.temperatura.maxima}}</td>
+                    </tr>
+                    <tr>
+                        <td class="temperaturas" colspan="7"><b>Mínima: </b>{{datos_aemet.temperatura.maxima}}</td>
+                    </tr>
+                </tbody>
+              </thead>
+        </table>
     </div>
 
     <script src="masinfo.js"></script>
