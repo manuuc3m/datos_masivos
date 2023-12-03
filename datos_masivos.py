@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import webbrowser
 import os
 import re
+import time
 
 wikipedia_url="https://es.wikipedia.org/wiki/"
 aparcamientos_url = "https://datos.madrid.es/egob/catalogo/202625-0-aparcamientos-publicos.xml"
@@ -208,6 +209,7 @@ def cargar_info_distritos(distrito,texto):
 def extraer_rutas_senderismo():
     for distrito in lista_distritos:
         extraer_rutas_distrito(distrito)
+        time.sleep(5)
 
 def extraer_rutas_distrito(distrito):
 
@@ -223,50 +225,72 @@ def extraer_rutas_distrito(distrito):
         for ruta in nombreRutas:
             lista_links_rutas.append(ruta.findChild("a")['href'])
 
-        for link in lista_links_rutas:
-            extraer_info_ruta(link, distrito)
+         for i in range(10):
+            extraer_info_ruta(lista_links_rutas[i], distrito)
 
 def extraer_info_ruta(url, distrito):
 
-    # Extraer info de una ruta
+   # Extraer info de una ruta
     ruta_url = "https://es.wikiloc.com/" + url
     resp_ruta = requests.get(ruta_url, headers=headers)
     soupRuta = BeautifulSoup(resp_ruta.text, 'html.parser')
 
     # Encontrar nombre
-    nombre_ruta_element = soupRuta.find('h1', {'class': 'd-inline dont-break-out'})
+    nombre_ruta_element = soupRuta.find('div', {'class': 'view__header__title'})
     nombre = nombre_ruta_element.text.strip()
 
-    # Encontrar informacion principal
-    info_ruta_element = soupRuta.find('div', {'class': 'data-items'})
-    info_ruta = info_ruta_element.find_all('span')
-    hasStar = 0
+    # Encontrar info principal
+    info_element = soupRuta.find_all('div', {'class': 'd-item'})
+    info = []
 
-    if(len(info_ruta) == 10):
-        hasStar = 2
+    for i in range(9):
+        if i != 5:
+            info.append(info_element[i].text.strip().replace("\xa0", " ").splitlines()[1])
+        else:
+            trailrank_texts = info_element[5].text.strip().split()
+            hasStar = 0
+            if len(trailrank_texts) == 3:
+                hasStar = 1
+            info.append(info_element[5].text.strip().split()[1 + hasStar])
 
-    distancia = info_ruta[0].text
-    des_pos = info_ruta[1].text
-    dificultad = info_ruta[2].text
-    des_neg = info_ruta[3].text
-    alt_max = info_ruta[4].text
-    trailrank = info_ruta[5].text
-    alt_min = info_ruta[6 + hasStar].text
-    tipo_ruta = info_ruta[7 + hasStar].text
-
-    # Encontrar tiempo
-    moreInfo_element = soupRuta.find('div', {'class': 'more-data'})
-    tiempo_ruta_element = moreInfo_element.find('span')
-    tiempo = tiempo_ruta_element.text.strip()
+    distancia = info[0]
+    des_pos = info[1]
+    dificultad = info[2]
+    des_neg = info[3]
+    alt_max = info[4]
+    trailrank = info[5]
+    alt_min = info[6]
+    tipo_ruta = info[7]
+    tiempo = info[8]
 
     # Encontrar descripción
     descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out'})
-    if(descripcion_element == None):
+    if (descripcion_element == None):
         descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out description-original'})
-    if(descripcion_element != None): descripcion = descripcion_element.text
-    else: descripcion = "No hay descripcion para esta ruta"
+    if (descripcion_element != None):
+        html_desc = str(descripcion_element)
+        descripcion = filter_description(html_desc)
+    else:
+        descripcion = "No hay descripcion para esta ruta"
 
     cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min)
+
+
+#Método para obtener solo el texto sin formato de la descripción
+def filter_description(text):
+
+    filter_text = text.replace("<br/>", "\n")
+    text_filtered = ""
+    shouldWrite = True
+
+    for c in filter_text:
+        if c == '<':
+            shouldWrite = False
+        if shouldWrite:
+            text_filtered += c
+        if c == '>':
+            shouldWrite = True
+    return text_filtered.strip()   
 
 def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min):
     try:
