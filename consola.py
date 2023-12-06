@@ -47,7 +47,7 @@ def generar_y_abrir_html(distrito):
         os.remove(path_resultado)    
     
     #Informacion de rutas en el distrito 
-    select_query_rutas = f"""SELECT * FROM rutas WHERE distrito = '{distrito}';"""
+    select_query_rutas = f"""SELECT * FROM rutas WHERE distrito = '{distrito}' ORDER BY valor_metrica;"""
     rutas = consultar(select_query_rutas)
     lista_rutas = [{"nombre": r[0], "distrito": r[1], "distancia": r[2], "tiempo": r[3], "dificultad": r[4], "tipo_ruta": r[5], "descripcion": r[6], "trailrank": r[7], "des_pos": r[8], "des_neg": r[9], "alt_max": r[10], "alt_min": r[11],} for r in rutas]
 
@@ -65,6 +65,22 @@ def generar_y_abrir_html(distrito):
     # string como parametro
     aemet_data_current = query_aemet()
 
+    # Datos grafico dificultad
+    dificultades_distancias = [{"x": r[4], "y": r[2],} for r in rutas]
+    distancias_faciles = []
+    distancias_moderadas = []
+    distancias_dificiles = []
+    for i in range(len(dificultades_distancias)):
+        if dificultades_distancias[i]['x'] == 'Fácil':
+            dificultades_distancias[i]['x'] = 'Faciles'
+            distancias_faciles.append(dificultades_distancias[i])
+        elif dificultades_distancias[i]['x'] == 'Moderado':
+            dificultades_distancias[i]['x'] = 'Moderadas'
+            distancias_moderadas.append(dificultades_distancias[i])
+        else:
+            dificultades_distancias[i]['x'] = 'Dificiles'
+            distancias_dificiles.append(dificultades_distancias[i])
+        dificultades_distancias[i]['y'] = float(dificultades_distancias[i]['y'].split(' ')[0].split(',')[0])
 
     # Escribe el archivo HTML
     with open(nombre_archivo_resultante, mode="w", encoding="utf-8") as results:
@@ -73,7 +89,10 @@ def generar_y_abrir_html(distrito):
             rutas=lista_rutas,
             historia_distrito=historia_distrito ,     
             datos_aemet=aemet_data_current,
-            aparcamientos=lista_aparcamientos
+            aparcamientos=lista_aparcamientos,
+            distancias_faciles=distancias_faciles,
+            distancias_moderadas=distancias_moderadas,
+            distancias_dificiles=distancias_dificiles
         ))        
         print(f"... wrote {nombre_archivo_resultante}")
     
