@@ -9,6 +9,7 @@ import time
 
 wikipedia_url="https://es.wikipedia.org/wiki/"
 aparcamientos_url = "https://datos.madrid.es/egob/catalogo/202625-0-aparcamientos-publicos.xml"
+ruta_fichero_wikiloc = "wikiloc.csv"
 
 #listas auxiliares para diferenciar los casos de extraccion de la informacion historica de cada distrito
 #existen casos donde no aparece el apartado historia en wikipedia, y se debe extraer el aspecto de cultura, o los primeros parrafos de la pagina
@@ -213,69 +214,71 @@ def extraer_rutas_senderismo():
         time.sleep(5)
 
 def extraer_rutas_distrito(distrito):
+    try:
+        #Extraer info de un distrito
+        for subdistrito in diccWikiloc[distrito]:
+            distrito_url = "https://es.wikiloc.com/rutas/senderismo/espana/comunidad-de-madrid/" + subdistrito
+            resp_distrito = requests.get(distrito_url, headers=headers)
+            soupDistrito = BeautifulSoup(resp_distrito.text, 'html.parser')
 
-    #Extraer info de un distrito
-    for subdistrito in diccWikiloc[distrito]:
-        distrito_url = "https://es.wikiloc.com/rutas/senderismo/espana/comunidad-de-madrid/" + subdistrito
-        resp_distrito = requests.get(distrito_url, headers=headers)
-        soupDistrito = BeautifulSoup(resp_distrito.text, 'html.parser')
+            #Extraer links de las rutas del distrito
+            lista_links_rutas = []
+            nombreRutas = soupDistrito.find_all('h2', {'class': 'trail__title'})
+            for ruta in nombreRutas:
+                lista_links_rutas.append(ruta.findChild("a")['href'])
 
-        #Extraer links de las rutas del distrito
-        lista_links_rutas = []
-        nombreRutas = soupDistrito.find_all('h2', {'class': 'trail__title'})
-        for ruta in nombreRutas:
-            lista_links_rutas.append(ruta.findChild("a")['href'])
-
-        for i in range(10):
-            extraer_info_ruta(lista_links_rutas[i], distrito)
-
+            for i in range(10):
+                extraer_info_ruta(lista_links_rutas[i], distrito)
+    except:
+        leer_csv()
 def extraer_info_ruta(url, distrito):
+    try:
+       # Extraer info de una ruta
+        ruta_url = "https://es.wikiloc.com/" + url
+        resp_ruta = requests.get(ruta_url, headers=headers)
+        soupRuta = BeautifulSoup(resp_ruta.text, 'html.parser')
 
-   # Extraer info de una ruta
-    ruta_url = "https://es.wikiloc.com/" + url
-    resp_ruta = requests.get(ruta_url, headers=headers)
-    soupRuta = BeautifulSoup(resp_ruta.text, 'html.parser')
+        # Encontrar nombre
+        nombre_ruta_element = soupRuta.find('div', {'class': 'view__header__title'})
+        nombre = nombre_ruta_element.text.strip()
 
-    # Encontrar nombre
-    nombre_ruta_element = soupRuta.find('div', {'class': 'view__header__title'})
-    nombre = nombre_ruta_element.text.strip()
+        # Encontrar info principal
+        info_element = soupRuta.find_all('div', {'class': 'd-item'})
+        info = []
 
-    # Encontrar info principal
-    info_element = soupRuta.find_all('div', {'class': 'd-item'})
-    info = []
+        for i in range(9):
+            if i != 5:
+                info.append(info_element[i].text.strip().replace("\xa0", " ").splitlines()[1])
+            else:
+                trailrank_texts = info_element[5].text.strip().split()
+                hasStar = 0
+                if len(trailrank_texts) == 3:
+                    hasStar = 1
+                info.append(info_element[5].text.strip().split()[1 + hasStar])
 
-    for i in range(9):
-        if i != 5:
-            info.append(info_element[i].text.strip().replace("\xa0", " ").splitlines()[1])
+        distancia = info[0]
+        des_pos = info[1]
+        dificultad = info[2]
+        des_neg = info[3]
+        alt_max = info[4]
+        trailrank = info[5]
+        alt_min = info[6]
+        tipo_ruta = info[7]
+        tiempo = info[8]
+
+        # Encontrar descripción
+        descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out'})
+        if (descripcion_element == None):
+            descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out description-original'})
+        if (descripcion_element != None):
+            html_desc = str(descripcion_element)
+            descripcion = filter_description(html_desc)
         else:
-            trailrank_texts = info_element[5].text.strip().split()
-            hasStar = 0
-            if len(trailrank_texts) == 3:
-                hasStar = 1
-            info.append(info_element[5].text.strip().split()[1 + hasStar])
+            descripcion = "No hay descripcion para esta ruta"
 
-    distancia = info[0]
-    des_pos = info[1]
-    dificultad = info[2]
-    des_neg = info[3]
-    alt_max = info[4]
-    trailrank = info[5]
-    alt_min = info[6]
-    tipo_ruta = info[7]
-    tiempo = info[8]
-
-    # Encontrar descripción
-    descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out'})
-    if (descripcion_element == None):
-        descripcion_element = soupRuta.find('div', {'class': 'description dont-break-out description-original'})
-    if (descripcion_element != None):
-        html_desc = str(descripcion_element)
-        descripcion = filter_description(html_desc)
-    else:
-        descripcion = "No hay descripcion para esta ruta"
-
-    cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min)
-
+        cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min)
+    except:
+        leer_csv()
 
 #Método para obtener solo el texto sin formato de la descripción
 def filter_description(text):
@@ -301,7 +304,7 @@ def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_rut
         count = cursor.execute(
             """INSERT INTO rutas (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, valor_metrica, des_pos, des_neg, alt_max, alt_min) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)""",
-            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, float(trailrank.replace(',', '.')), valor_metrica, des_pos, des_neg, alt_max, alt_min))
+            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, valor_metrica, des_pos, des_neg, alt_max, alt_min))
         sqliteConnection.commit()
         print("agregado", cursor.rowcount)
 
@@ -311,11 +314,20 @@ def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_rut
         if sqliteConnection:
             sqliteConnection.close()
 
+def leer_csv():
+    fichero_wikiloc = open(ruta_fichero_wikiloc, "r", encoding='utf-8')
+    lineas = fichero_wikiloc.readlines()
+    for linea in lineas:
+        datos = linea.strip().split(";")
+        cargar_datos_rutas(datos[0], datos[1], datos[2], datos[3], datos[4], datos[5], datos[6], datos[7], datos[8], datos[9], datos[10], datos[11])
+    fichero_wikiloc.close()
+
 def calcula_datos_metrica(trailrank, dificultad, distancia):
-    print(trailrank)
-    if float(distancia.split(' ')[0].split(',')[0]) < 5:
+    distancia_numero = float(distancia.split(' ')[0].split(',')[0])
+    
+    if distancia_numero < 5:
         valor_distancia = 0.4
-    elif float(distancia.split(' ')[0].split(',')[0]) > 5 and float(distancia.split(' ')[0].split(',')[0]) < 10:
+    elif distancia_numero > 5 and distancia_numero < 10:
         valor_distancia = 0.5
     else:
         valor_distancia = 0.3
