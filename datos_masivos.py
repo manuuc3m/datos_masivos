@@ -323,10 +323,11 @@ def leer_csv():
     fichero_wikiloc.close()
 
 def calcula_datos_metrica(trailrank, dificultad, distancia):
-    print(trailrank)
-    if float(distancia.split(' ')[0].split(',')[0]) < 5:
+    distancia_numero = float(distancia.split(' ')[0].split(',')[0])
+    
+    if distancia_numero < 5:
         valor_distancia = 0.4
-    elif float(distancia.split(' ')[0].split(',')[0]) > 5 and float(distancia.split(' ')[0].split(',')[0]) < 10:
+    elif distancia_numero > 5 and distancia_numero < 10:
         valor_distancia = 0.5
     else:
         valor_distancia = 0.3
