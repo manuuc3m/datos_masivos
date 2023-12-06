@@ -225,7 +225,7 @@ def extraer_rutas_distrito(distrito):
         for ruta in nombreRutas:
             lista_links_rutas.append(ruta.findChild("a")['href'])
 
-         for i in range(10):
+        for i in range(10):
             extraer_info_ruta(lista_links_rutas[i], distrito)
 
 def extraer_info_ruta(url, distrito):
@@ -299,7 +299,7 @@ def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_rut
         count = cursor.execute(
             """INSERT INTO rutas (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)""",
-            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, int(trailrank), des_pos, des_neg, alt_max, alt_min))
+            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min))
         sqliteConnection.commit()
         print("agregado", cursor.rowcount)
 
