@@ -55,7 +55,8 @@ tabla_rutas = """CREATE TABLE rutas (
     dificultad TEXT NOT NULL,
     tipo_ruta TEXT NOT NULL,
     descripcion TEXT NOT NULL,
-    trailrank INTEGER,
+    trailrank REAL,
+    valor_metrica REAL,
     des_pos TEXT NOT NULL,
     des_neg TEXT NOT NULL,
     alt_max TEXT NOT NULL,
@@ -296,10 +297,11 @@ def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_rut
     try:
         sqliteConnection = sqlite3.connect('SQLite_Python.db')
         cursor = sqliteConnection.cursor()
+        valor_metrica = calcula_datos_metrica(trailrank, dificultad, distancia)
         count = cursor.execute(
-            """INSERT INTO rutas (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)""",
-            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, des_pos, des_neg, alt_max, alt_min))
+            """INSERT INTO rutas (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, trailrank, valor_metrica, des_pos, des_neg, alt_max, alt_min) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)""",
+            (nombre, distrito, distancia, tiempo, dificultad, tipo_ruta, descripcion, float(trailrank.replace(',', '.')), valor_metrica, des_pos, des_neg, alt_max, alt_min))
         sqliteConnection.commit()
         print("agregado", cursor.rowcount)
 
@@ -309,7 +311,21 @@ def cargar_datos_rutas(nombre, distrito, distancia, tiempo, dificultad, tipo_rut
         if sqliteConnection:
             sqliteConnection.close()
 
-
+def calcula_datos_metrica(trailrank, dificultad, distancia):
+    print(trailrank)
+    if float(distancia.split(' ')[0].split(',')[0]) < 5:
+        valor_distancia = 0.4
+    elif float(distancia.split(' ')[0].split(',')[0]) > 5 and float(distancia.split(' ')[0].split(',')[0]) < 10:
+        valor_distancia = 0.5
+    else:
+        valor_distancia = 0.3
+        
+    if dificultad=='Fácil':
+        return float(trailrank.replace(',', '.'))*0.1 + 0.3 + valor_distancia
+    elif dificultad=='Moderado':
+        return float(trailrank.replace(',', '.'))*0.1 + 0.2 + valor_distancia
+    else:
+        return float(trailrank.replace(',', '.'))*0.1 + 0.1 + valor_distancia
            
 
 #METODO PRINCIPAL MAIN
